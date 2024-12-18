@@ -66,8 +66,18 @@ std::string set_to_str(std::multiset<Order> orders) {
     for (auto order : orders) {
         str += std::to_string(order.quantity) + ", ";
     }
+    str.pop_back();
+    str.pop_back(); // Remove last comma
     str += "],\n";
     return str;
+}
+
+std::string line(const Price &price, const Orders &orders) {
+    std::ostringstream out;
+    out.precision(2);
+    out.clear();
+    out << std::fixed << price;
+    return "\t\t\"" + std::move(out).str() + "\": " + set_to_str(orders);
 }
 
 std::string all_orders(Exchange &ex, const std::string &query) {
@@ -81,18 +91,16 @@ std::string all_orders(Exchange &ex, const std::string &query) {
 
     Side &buy = ex[params["ticker"]]->buy;
     Side &sell = ex[params["ticker"]]->sell;
-    std::string response = "HTTP/1.1 200 OK\n\n";
+    std::string response = "HTTP/1.1 200 OK\n\n{\n\t\"BUY\": {\n";
 
-    response += "{\n\t\"BUY\": {\n";
     for (const auto &[price, quantities] : buy) {
-        response += "\t\t\"" + std::to_string(price) + "\": " + set_to_str(quantities);
+        response += line(price, quantities);
     }
-    response += "\t},\n";
-    response += "\t\"SELL\": {\n";
+    response =
+        response.substr(0, response.length() - 2) + "\n\t},\n\t\"SELL\": {\n";
     for (const auto &[price, quantities] : sell) {
-        response += "\t\t\"" + std::to_string(price) + "\": " + set_to_str(quantities);
+        response += line(price, quantities);
     }
-    response += "\t}\n";
-    response += "}\n";
+    response = response.substr(0, response.length() - 2) + "\n\t}\n}\n";
     return response;
 }
