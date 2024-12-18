@@ -1,6 +1,8 @@
 #include "../includes/Server.hpp"
-#include <thread>
 
-int main() {
-    startServer();
+int main(int argc, char **argv) {
+    if (argc)
+        startServer(atoi(argv[0]));
+    else
+        startServer();
 }
