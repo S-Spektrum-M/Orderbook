@@ -6,7 +6,7 @@
 #include <string>
 #include <unistd.h>
 
-void startServer() {
+void startServer(int port = 8080) {
     int serverFd, clientSocket;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
@@ -20,14 +20,13 @@ void startServer() {
     // Configure the server address
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    int p = PORT;
 assign_port:
-    address.sin_port = htons(p);
+    address.sin_port = htons(port);
 
     // Bind the socket to the port
     if (bind(serverFd, (struct sockaddr *)&address, sizeof(address)) < 0) {
         perror("Bind failed");
-        ++p;
+        ++port;
         goto assign_port;
     }
 
@@ -37,7 +36,7 @@ assign_port:
         exit(EXIT_FAILURE);
     }
 
-    std::cout << "Server listening on port " << p << "...\n";
+    std::cout << "Server listening on port " << port << "...\n";
     Exchange exchange;
 
     // Accept and handle incoming requests
