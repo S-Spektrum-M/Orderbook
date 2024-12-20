@@ -25,6 +25,9 @@ build/bin/orderbook: build/intermediates/main.o build/intermediates/Ledger.o bui
 run: build/bin/orderbook
 	./build/bin/orderbook
 
+run-test:
+	python3 test/request.py
+
 clean:
 	rm -rf build
 
