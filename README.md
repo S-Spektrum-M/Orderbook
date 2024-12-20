@@ -35,12 +35,12 @@ deployment.
 
 Moreover, the program's design emphasizes minimizing the market impact of
 high-frequency trading activities. By consolidating orders before execution,
-the program reduces slippage and helps maintain price stability in the market.
+the program reduces [slippage](https://www.investopedia.com/terms/s/slippage.asp) and helps maintain price stability in the market.
 This is particularly important in scenarios where liquidity is limited, and
-large orders could otherwise distort prices. With its combination of
-operational efficiency and market-sensitivity, this mock API serves as an
-invaluable tool for developing, testing, and perfecting trading strategies
-tailored to the demanding requirements of HFT systems.
+large orders could otherwise distort prices. With its combination of operational
+efficiency and market-sensitivity, this mock API serves as a tool for
+developing, testing, and perfecting trading strategies tailored to the demanding
+requirements of HFT systems.
 
 ### Endpoints
 
