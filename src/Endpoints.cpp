@@ -18,7 +18,7 @@ parseQueryParams(const std::string &query) {
     return params;
 }
 
-void buy_order(Exchange &ex, const std::string &query) {
+Quantity buy_order(Exchange &ex, const std::string &query) {
     auto params = parseQueryParams(query);
 
     // Validate query parameters
@@ -26,19 +26,21 @@ void buy_order(Exchange &ex, const std::string &query) {
         params.find("price") == params.end() ||
         params.find("quantity") == params.end()) {
         std::cerr << "Error: Missing required query parameters.\n";
-        return;
+        return -1;
     }
 
     std::string ticker = params["ticker"];
     Price price = std::stod(params["price"]);
     Quantity quantity = std::stoi(params["quantity"]);
     if (ex.find(ticker) == ex.end()) {
-        ex[ticker] = new Ledger();
+        ex[ticker] = std::make_shared<Ledger>();
+        // ex[ticker] = new Ledger();
     }
     ex[ticker]->place_order(price, quantity, BUY);
+    return quantity;
 }
 
-void sell_order(Exchange &ex, const std::string &query) {
+Quantity sell_order(Exchange &ex, const std::string &query) {
     auto params = parseQueryParams(query);
 
     // Validate query parameters
@@ -46,16 +48,18 @@ void sell_order(Exchange &ex, const std::string &query) {
         params.find("price") == params.end() ||
         params.find("quantity") == params.end()) {
         std::cerr << "Error: Missing required query parameters.\n";
-        return;
+        return -1;
     }
 
     std::string ticker = params["ticker"];
     Price price = std::stod(params["price"]);
     Quantity quantity = std::stoi(params["quantity"]);
     if (ex.find(ticker) == ex.end()) {
-        ex[ticker] = new Ledger();
+        ex[ticker] = std::make_shared<Ledger>();
+        // ex[ticker] = new Ledger();
     }
     ex[ticker]->place_order(price, quantity, SELL);
+    return quantity;
 }
 
 std::string set_to_str(std::multiset<Order> orders) {
