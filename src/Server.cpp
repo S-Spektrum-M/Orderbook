@@ -25,31 +25,52 @@ void startServer(int port = 8080) {
     // Accept and handle incoming requests
     while (true) {
         ClientSocketValue(serverFd, &address, &addrlen, clientSocket);
-        /* if (clientSocket < 0) {
+        if (clientSocket < 0) {
             std::cerr << "Accept failed\n";
             exit(EXIT_FAILURE);
-        } */
+        }
 
         char buffer[30000] = {0};
         size_t sz = read(clientSocket, buffer, 30000);
         handleRequest(exchange, (std::string)buffer, clientSocket);
         close(clientSocket);
+        std::cout << std::flush;
     }
 }
 
 void handleRequest(Exchange &exchange, const std::string &request,
                    int clientSocket) {
-    auto [path, query] = split_at(request, '?');
-    std::cout << path << std::endl;
+    size_t endpointStart = request.find(' ') + 1;
+    size_t endpointEnd = request.find(' ', endpointStart);
+    std::string endpoint =
+        request.substr(endpointStart, endpointEnd - endpointStart);
+
+    size_t queryStart = endpoint.find('?');
+    std::string path = (queryStart != std::string::npos)
+                           ? endpoint.substr(0, queryStart)
+                           : endpoint;
+    std::string query = (queryStart != std::string::npos)
+                            ? endpoint.substr(queryStart + 1)
+                            : "";
     std::string response;
 
     // Route the request based on the path
     if (path == "/buy_order") {
-        buy_order(exchange, query);
-        response = "HTTP/1.1 200 OK\n\nBuy order placed successfully.\n";
+        Quantity unfilled = buy_order(exchange, query);
+        if (unfilled == -1)
+            response = "HTTP/1.1 400\n\nMissing parameters.\n";
+        else
+            response =
+                "HTTP/1.1 200 OK\n\n{\"unfilled\": " + std::to_string(unfilled) +
+                "}\n";
     } else if (path == "/sell_order") {
-        sell_order(exchange, query);
-        response = "HTTP/1.1 200 OK\n\nSell order placed successfully.\n";
+        Quantity unfilled = sell_order(exchange, query);
+        if (unfilled == -1)
+            response = "HTTP/1.1 400\n\nMissing parameters.\n";
+        else
+            response =
+                "HTTP/1.1 200 OK\n\n{\"unfilled\": " + std::to_string(unfilled) +
+                "}\n";
     } else if (path == "/all_orders") {
         response = all_orders(exchange, query);
     } else {
@@ -110,6 +131,8 @@ std::pair<std::string, std::string> split_at(const std::string &request,
     return {path, query};
 }
 
-int ClientSocketValue(int serverFD, void *address, void *addrlen, int &clientSocket) {
-    return (clientSocket = accept(serverFD, (sockaddr *)&address, (socklen_t *)&addrlen));
+int ClientSocketValue(int serverFD, void *address, void *addrlen,
+                      int &clientSocket) {
+    return (clientSocket =
+                accept(serverFD, (sockaddr *)&address, (socklen_t *)&addrlen));
 }
