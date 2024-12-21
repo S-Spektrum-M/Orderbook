@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <ctime>
 #include <iostream>
+#include <memory>
 #include <set>
 #include <unordered_map>
 #define BUY true
@@ -15,7 +16,7 @@ using Quantity = std::uint32_t;
 using OrderTime = std::time_t;
 using Orders = std::multiset<Order>;
 using Side = std::unordered_map<Price, Orders>;
-using Exchange = std::unordered_map<std::string, Ledger *>;
+using Exchange = std::unordered_map<std::string, std::shared_ptr<Ledger>>;
 using Exchanges = std::unordered_map<std::string, Exchange>;
 
 struct Order {
