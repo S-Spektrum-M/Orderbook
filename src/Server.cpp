@@ -14,8 +14,6 @@ struct config_res {
 };
 
 config_res serverConfigs(int);
-std::pair<std::string, std::string> split_at(const std::string &request,
-                                             char delimiter);
 int ClientSocketValue(int, void *, void *, int &clientSocket);
 
 void startServer(int port = 8080) {
@@ -112,23 +110,6 @@ config_res serverConfigs(int port) {
 
     std::cout << "Server listening on port " << port << "...\n";
     return {clientSocket, address, serverFd, addrlen};
-}
-
-std::pair<std::string, std::string> split_at(const std::string &request,
-                                             char delimiter) {
-    size_t endpointStart = request.find(' ') + 1;
-    size_t endpointEnd = request.find(' ', endpointStart);
-    std::string endpoint =
-        request.substr(endpointStart, endpointEnd - endpointStart);
-
-    size_t queryStart = endpoint.find(delimiter);
-    std::string path = (queryStart != std::string::npos)
-                           ? endpoint.substr(0, queryStart)
-                           : endpoint;
-    std::string query = (queryStart != std::string::npos)
-                            ? endpoint.substr(queryStart + 1)
-                            : "";
-    return {path, query};
 }
 
 int ClientSocketValue(int serverFD, void *address, void *addrlen,
