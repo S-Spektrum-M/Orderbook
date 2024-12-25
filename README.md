@@ -14,14 +14,15 @@ make run
 
 ## Project Description
 
-This program features a mock API designed to simulate trading on the NYSE, with
-a unique focus on pre-coalescing orders. By aggregating smaller orders into
-larger, more efficient blocks, the program reduces the overhead associated with
-handling individual transactions. This pre-coalescing functionality is
-particularly beneficial in High-Frequency Trading (HFT) environments, where the
-speed and efficiency of trade execution can significantly impact profitability.
-By reducing the number of discrete order submissions, the program minimizes
-processing delays and enhances the scalability of trading operations.
+This program features a mock API designed to simulate trading on the
+NYSE/NASDAQ, with a unique focus on pre-coalescing orders. By aggregating
+smaller orders into larger, more efficient blocks, the program reduces the
+overhead associated with handling individual transactions. This pre-coalescing
+functionality is particularly beneficial in High-Frequency Trading (HFT)
+environments, where the speed and efficiency of trade execution can
+significantly impact profitability. By reducing the number of discrete order
+submissions, the program minimizes processing delays and enhances the
+scalability of trading operations.
 
 In HFT, the ability to optimize execution strategies is critical to capitalizing
 on fleeting market opportunities. The pre-coalescing mechanism ensures that
@@ -44,11 +45,12 @@ requirements of HFT systems.
 
 ### Endpoints
 
-|       Endpoint      |     URL     |          Arguments          |
-|---------------------|-------------|-----------------------------|
-|Buy Order Submission | `/buy_order`|`ticker`, `price`, `quantity`|
-|Sell Order Submission|`/sell_order`|`ticker`, `price`, `quantity`|
-|All Unfilled Orders  | `/all_order`|`ticker`                     |
+|       Endpoint      |      URL      |          Arguments          |
+|---------------------|---------------|-----------------------------|
+|Buy Order Submission | `/buy_order`  |`ticker`, `price`, `quantity`|
+|Sell Order Submission|`/sell_order`  |`ticker`, `price`, `quantity`|
+|All Unfilled Orders  | `/all_order`  |`ticker`                     |
+|All Tickers          | `/all_tickers`|                             |
 
 
 ## Project Structure
