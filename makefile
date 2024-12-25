@@ -14,13 +14,9 @@ build/intermediates/Server.o:
 	mkdir -p build/intermediates
 	g++ src/Server.cpp -c -o build/intermediates/Server.o -O3
 
-build/intermediates/UI.o:
-	mkdir -p build/intermediates
-	g++ src/UI.cpp -c -o build/intermediates/UI.o -O3
-
-build/bin/orderbook: build/intermediates/main.o build/intermediates/Ledger.o build/intermediates/Server.o build/intermediates/UI.o build/intermediates/Endpoints.o
+build/bin/orderbook: build/intermediates/main.o build/intermediates/Ledger.o build/intermediates/Server.o build/intermediates/Endpoints.o
 	mkdir -p build/bin
-	g++ build/intermediates/UI.o build/intermediates/Server.o build/intermediates/Ledger.o build/intermediates/Endpoints.o build/intermediates/main.o -o build/bin/orderbook -O3
+	g++ build/intermediates/Server.o build/intermediates/Ledger.o build/intermediates/Endpoints.o build/intermediates/main.o -o build/bin/orderbook -O3
 
 run: build/bin/orderbook
 	./build/bin/orderbook
