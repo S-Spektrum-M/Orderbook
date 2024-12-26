@@ -18,7 +18,7 @@ parseQueryParams(const std::string &query) {
     return params;
 }
 
-Quantity buy_order(Exchange &ex, const std::string &query) {
+Quantity buy_order(Exchange &ex, const std::string &query) noexcept {
     auto params = parseQueryParams(query);
 
     // Validate query parameters
@@ -36,11 +36,10 @@ Quantity buy_order(Exchange &ex, const std::string &query) {
         ex[ticker] = std::make_shared<Ledger>();
         // ex[ticker] = new Ledger();
     }
-    ex[ticker]->place_order(price, quantity, BUY);
-    return quantity;
+    return ex[ticker]->place_order(price, quantity, BUY);
 }
 
-Quantity sell_order(Exchange &ex, const std::string &query) {
+Quantity sell_order(Exchange &ex, const std::string &query) noexcept{
     auto params = parseQueryParams(query);
 
     // Validate query parameters
@@ -58,8 +57,7 @@ Quantity sell_order(Exchange &ex, const std::string &query) {
         ex[ticker] = std::make_shared<Ledger>();
         // ex[ticker] = new Ledger();
     }
-    ex[ticker]->place_order(price, quantity, SELL);
-    return quantity;
+    return ex[ticker]->place_order(price, quantity, SELL);
 }
 
 std::string set_to_str(std::multiset<Order> orders) {
@@ -76,7 +74,7 @@ std::string set_to_str(std::multiset<Order> orders) {
     return str;
 }
 
-std::string line(const Price &price, const Orders &orders) {
+std::string orders_to_str(const Price &price, const Orders &orders) {
     std::ostringstream out;
     out.precision(2);
     out.clear();
@@ -88,23 +86,35 @@ std::string all_orders(Exchange &ex, const std::string &query) {
     auto params = parseQueryParams(query);
     // Handle bad endpoint usage
     if (params.find("ticker") == params.end()) {
-        return "HTTP/1.1 400 Bad Request\n\nNo ticker Specified.";
+        return "HTTP/1.1 400 Bad Request\n\nNo ticker Specified.\n";
     }
     if (ex.find(params["ticker"]) == ex.end())
-        return "HTTP/1.1 400 Bad Request\n\nUnkown ticker";
+        return "HTTP/1.1 400 Bad Request\n\nUnkown ticker\n";
 
     Side &buy = ex[params["ticker"]]->buy;
     Side &sell = ex[params["ticker"]]->sell;
     std::string response = "HTTP/1.1 200 OK\n\n{\n\t\"BUY\": {\n";
 
     for (const auto &[price, quantities] : buy) {
-        response += line(price, quantities);
+        response += orders_to_str(price, quantities);
     }
     response =
         response.substr(0, response.length() - 2) + "\n\t},\n\t\"SELL\": {\n";
     for (const auto &[price, quantities] : sell) {
-        response += line(price, quantities);
+        response += orders_to_str(price, quantities);
     }
     response = response.substr(0, response.length() - 2) + "\n\t}\n}\n";
     return response;
+}
+
+std::string all_tickers(Exchange &ex) {
+    std::string header = "HTTP/1.1 200 OK\n\n";
+    std::string response = "[";
+    for (auto [k, v] : ex) {
+        response += "\"" + k + "\",";
+    }
+    // pop last charecter if not empty
+    if (response.length() > 1) response.pop_back();
+    response += "]\n";
+    return header + response;
 }

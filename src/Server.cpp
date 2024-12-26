@@ -15,24 +15,27 @@ struct config_res {
 
 config_res serverConfigs(int);
 int ClientSocketValue(int, void *, void *, int &clientSocket);
+void handleRequest(Exchange &exchange, const std::string &request,
+                   int clientSocket);
 
-void startServer(int port = 8080) {
+void startServer(int port) {
     auto [clientSocket, address, serverFd, addrlen] = serverConfigs(port);
     Exchange exchange;
 
     // Accept and handle incoming requests
     while (true) {
-        ClientSocketValue(serverFd, &address, &addrlen, clientSocket);
-        if (clientSocket < 0) {
+        if (ClientSocketValue(serverFd, &address, &addrlen, clientSocket) < 0) {
             std::cerr << "Accept failed\n";
             exit(EXIT_FAILURE);
         }
 
         char buffer[30000] = {0};
-        size_t sz = read(clientSocket, buffer, 30000);
+        read(clientSocket, buffer, 30000);
         handleRequest(exchange, (std::string)buffer, clientSocket);
         close(clientSocket);
-        std::cout << std::flush;
+
+        // Defer to end of execution
+        // std::cout << std::flush;
     }
 }
 
@@ -58,19 +61,19 @@ void handleRequest(Exchange &exchange, const std::string &request,
         if (unfilled == -1)
             response = "HTTP/1.1 400\n\nMissing parameters.\n";
         else
-            response =
-                "HTTP/1.1 200 OK\n\n{\"unfilled\": " + std::to_string(unfilled) +
-                "}\n";
+            response = "HTTP/1.1 200 OK\n\n{\"unfilled\": " +
+                       std::to_string(unfilled) + "}\n";
     } else if (path == "/sell_order") {
         Quantity unfilled = sell_order(exchange, query);
         if (unfilled == -1)
             response = "HTTP/1.1 400\n\nMissing parameters.\n";
         else
-            response =
-                "HTTP/1.1 200 OK\n\n{\"unfilled\": " + std::to_string(unfilled) +
-                "}\n";
+            response = "HTTP/1.1 200 OK\n\n{\"unfilled\": " +
+                       std::to_string(unfilled) + "}\n";
     } else if (path == "/all_orders") {
         response = all_orders(exchange, query);
+    } else if (path == "/all_tickers") {
+        response = all_tickers(exchange);
     } else {
         response = "HTTP/1.1 404 Not Found\n\nEndpoint not found.\n";
     }
@@ -81,15 +84,17 @@ void handleRequest(Exchange &exchange, const std::string &request,
 }
 
 config_res serverConfigs(int port) {
-    int serverFd, clientSocket;
-    sockaddr_in address;
-    int addrlen = sizeof(address);
+    int serverFd;
 
     // Create socket file descriptor
     if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         std::cerr << "Socket failed\n";
         exit(EXIT_FAILURE);
     }
+
+    int clientSocket;
+    sockaddr_in address;
+    int addrlen = sizeof(address);
 
     // Configure the server address
     address.sin_family = AF_INET;
