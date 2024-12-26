@@ -29,5 +29,5 @@ struct Order {
 struct Ledger {
     Side buy;
     Side sell;
-    void place_order(Price price, Order order, bool side);
+    Quantity place_order(Price price, Order order, bool side);
 };
