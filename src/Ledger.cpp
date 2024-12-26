@@ -6,7 +6,7 @@ bool Order::operator<(const Order &compareTo) const {
     return time < compareTo.time;
 }
 
-void Ledger::place_order(Price price, Order order, bool side) {
+Quantity Ledger::place_order(Price price, Order order, bool side) {
     // 1. Find outstanding orders that can satisfy and remove
     Quantity outstanding = order.quantity;
     Orders &lookup_level = side ? sell[price] : buy[price];
@@ -17,12 +17,12 @@ void Ledger::place_order(Price price, Order order, bool side) {
             outstanding -= fill;
         } else {
             lookup_level.begin()._M_const_cast()->quantity -= outstanding;
-            outstanding = 0;
-            return;
+            return 0;
         }
     }
     // Submit outstanding volume;
     if (outstanding) {
         (side ? buy[price] : sell[price]).insert({outstanding});
     }
+    return outstanding;
 }
