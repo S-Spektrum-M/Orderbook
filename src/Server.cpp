@@ -4,7 +4,9 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <thread>
 #include <unistd.h>
+#include <vector>
 
 struct config_res {
     int clientSocket;
@@ -22,20 +24,26 @@ void startServer(int port) {
     auto [clientSocket, address, serverFd, addrlen] = serverConfigs(port);
     Exchange exchange;
 
-    // Accept and handle incoming requests
+    std::vector<std::thread> threadPool;
+
     while (true) {
         if (ClientSocketValue(serverFd, &address, &addrlen, clientSocket) < 0) {
             std::cerr << "Accept failed\n";
-            exit(EXIT_FAILURE);
+            continue;
         }
 
-        char buffer[30000] = {0};
-        read(clientSocket, buffer, 30000);
-        handleRequest(exchange, (std::string)buffer, clientSocket);
-        close(clientSocket);
+        threadPool.emplace_back([clientSocket, &exchange]() {
+            char buffer[30000] = {0};
+            read(clientSocket, buffer, 30000);
+            handleRequest(exchange, std::string(buffer), clientSocket);
+            close(clientSocket);
+        });
+    }
 
-        // Defer to end of execution
-        // std::cout << std::flush;
+    for (auto &thread : threadPool) {
+        if (thread.joinable()) {
+            thread.join();
+        }
     }
 }
 
