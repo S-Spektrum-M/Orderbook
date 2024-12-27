@@ -1,22 +1,27 @@
+INTERMEDIATES = build/intermediates/Ledger.o build/intermediates/Endpoints.o build/intermediates/Server.o build/intermediates/main.o
+CC_OBJ = g++ --std=c++20 -c
+CC = g++ --std=c++20
+
+
 build/intermediates/main.o:
 	mkdir -p build/intermediates
-	g++ src/main.cpp -c -o build/intermediates/main.o -O3 -lcurl
+	$(CC_OBJ) src/main.cpp -o build/intermediates/main.o -O3
 
 build/intermediates/Ledger.o:
 	mkdir -p build/intermediates
-	g++ src/Ledger.cpp -c -o build/intermediates/Ledger.o -O3
+	$(CC_OBJ) src/Ledger.cpp -o build/intermediates/Ledger.o -O3
 
 build/intermediates/Endpoints.o:
 	mkdir -p build/intermediates
-	g++ src/Endpoints.cpp -c -o build/intermediates/Endpoints.o -O3
+	$(CC_OBJ) src/Endpoints.cpp -o build/intermediates/Endpoints.o -O3
 
 build/intermediates/Server.o:
 	mkdir -p build/intermediates
-	g++ src/Server.cpp -c -o build/intermediates/Server.o -O3
+	$(CC_OBJ) src/Server.cpp -o build/intermediates/Server.o -O3
 
-build/bin/orderbook: build/intermediates/main.o build/intermediates/Ledger.o build/intermediates/Server.o build/intermediates/Endpoints.o
+build/bin/orderbook: $(INTERMEDIATES)
 	mkdir -p build/bin
-	g++ build/intermediates/Server.o build/intermediates/Ledger.o build/intermediates/Endpoints.o build/intermediates/main.o -o build/bin/orderbook -O3
+	$(CC) $(INTERMEDIATES) -o build/bin/orderbook -O3
 
 run: build/bin/orderbook
 	./build/bin/orderbook
