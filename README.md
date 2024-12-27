@@ -1,9 +1,6 @@
-# Siddharth Mohanty Freshman Year Final Project
+# C++ Orderbook
 
-*Email*: [smohanty22@andrew.cmu.edu](mailto://smohanty22@andrew.cmu.edu)
-*Student ID*: 616990
-*Affiliation*: School of Computer Science
-*Graduation Class*: 2028
+*Email*: [smohanty5@ucsc.edu](mailto://smohanty5@ucsc.edu)
 
 ## Run Command
 ```bash
@@ -60,12 +57,6 @@ requirements of HFT systems.
 ./src/
 ./includes/
 ```
-
-## Attributions
-
-I, Siddharth Mohanty, confirm that this project is original work pursuant to
-Carnegie Mellon University's policy and the School of Computer Science's policy
-on academic honesty.
 
 ### Citations
 - [C++ Standard Template Library](https://isocpp.org/)
