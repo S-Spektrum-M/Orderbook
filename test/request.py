@@ -17,6 +17,7 @@ quantities = [random.randint(1, 10000) for i in range(test_ct)]
 
 
 def check():
+    s = requests.Session()
     buy_order = [
         f'http://localhost:{PORT}/buy_order?ticker={TEST_TICKER}&price={price}'
         f'&quantity={quantity}'
@@ -24,7 +25,7 @@ def check():
     ]
 
     for buy in buy_order:
-        requests.get(buy)
+        s.get(buy)
 
     sell_order = [
         f'http://localhost:{PORT}/sell_order?ticker={TEST_TICKER}'
@@ -33,10 +34,10 @@ def check():
     ]
 
     for sell in sell_order:
-        requests.get(sell)
+        s.get(sell)
 
-    res = requests.get(f'http://localhost:{PORT}/all_orders?'
-                       f'ticker={TEST_TICKER}').json()
+    res = s.get(f'http://localhost:{PORT}/all_orders?'
+                f'ticker={TEST_TICKER}').json()
     for x in res:
         for y in res[x]:
             for z in res[x][y]:
