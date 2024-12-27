@@ -29,7 +29,7 @@ void startServer(int port) {
     while (true) {
         if (ClientSocketValue(serverFd, &address, &addrlen, clientSocket) < 0) {
             std::cerr << "Accept failed\n";
-            continue;
+            exit(1);
         }
 
         threadPool.emplace_back([clientSocket, &exchange]() {
